@@ -1,0 +1,14 @@
+🔍 Here's how to find the correct Web Client SDK keys:
+Go to https://console.firebase.google.com
+
+Select your project (interviewprep-e388a)
+
+Click the ⚙️ Gear Icon → Project Settings
+
+Scroll down to the "Your apps" section
+
+Under "Firebase SDK snippet", you'll see a config like:
+
+js
+Copy
+Edit
