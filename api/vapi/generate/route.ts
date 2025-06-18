@@ -1,25 +1,16 @@
-import {generateText} from "ai"; 
-import {google} from "@ai-sdk/google";
+import { generateText } from "ai";
+import { google } from "@ai-sdk/google";
+
+import { db } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
-import { db } from "@/firebase/admin"
-
-//TO GET THE DATA FROM USER TO AI ASSISTANT
-export async function GET() {
-    return Response.json({_success: true, data : 'THANK YOU!'}, {status : 200});
-}
-
-//TO POST THE DATA FROM AI ASSISTANT TO USER
 
 export async function POST(request: Request) {
+  const { type, role, level, techstack, amount, userid } = await request.json();
 
-    //you can add cover image to params if u want to show custom profile picture or cover page of company
-    const { type, role, techstack, level , amount, userid} = await request.json();
-
-    try{
-        //generate ai text that vapi will use
-        const { text: questions } = await generateText({
-            model: google('gemini-2.0-flash-001'),
-            prompt: `Prepare questions for a job interview.
+  try {
+    const { text: questions } = await generateText({
+      model: google("gemini-2.0-flash-001"),
+      prompt: `Prepare questions for a job interview.
         The job role is ${role}.
         The job experience level is ${level}.
         The tech stack used in the job is: ${techstack}.
@@ -31,31 +22,30 @@ export async function POST(request: Request) {
         ["Question 1", "Question 2", "Question 3"]
         
         Thank you! <3
-    `
-        });
+    `,
+    });
 
-        //store the questions to database
-        const interview = {
-            role, type, level, 
-            techstack: techstack.split(','), 
-            questions: JSON.parse(questions),
-            userId : userid,
-            finalized : true, 
+    const interview = {
+      role: role,
+      type: type,
+      level: level,
+      techstack: techstack.split(","),
+      questions: JSON.parse(questions),
+      userId: userid,
+      finalized: true,
+      coverImage: getRandomInterviewCover(),
+      createdAt: new Date().toISOString(),
+    };
 
-            //for now we use random interview cover page
-            coverImage : getRandomInterviewCover(),
-            createdAt : new Date().toISOString()
-        }
+    await db.collection("interviews").add(interview);
 
-        //adding the interview to db
-        await db.collection("interviews").add(interview);
+    return Response.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("Error:", error);
+    return Response.json({ success: false, error: error }, { status: 500 });
+  }
+}
 
-        return Response.json({ success : true}, {status : 200})
-    }
-    catch (error) {
-        console.error(error);
-
-        return Response.json({_success : false, error : error}, {status : 500})
-    }
-
+export async function GET() {
+  return Response.json({ success: true, data: "Thank you!" }, { status: 200 });
 }
