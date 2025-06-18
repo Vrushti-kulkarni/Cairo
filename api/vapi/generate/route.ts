@@ -10,7 +10,7 @@ export async function GET() {
 
 //TO POST THE DATA FROM AI ASSISTANT TO USER
 
-export async fuction POST(request: Request) {
+export async function POST(request: Request) {
 
     //you can add cover image to params if u want to show custom profile picture or cover page of company
     const { type, role, techstack, level , amount, userid} = await request.json();
