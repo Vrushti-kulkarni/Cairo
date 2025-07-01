@@ -10,7 +10,7 @@ import DisplayTechIcons from './DisplayTechIcons';
 
 
 
-const InterviewCard = ({ interviewId, userId, role, type, techstack, createdAt }: InterviewCardProps) => {
+const PatientCard = ({ interviewId, userId, createdAt }: InterviewCardProps) => {
 
     const feedback = null as Feedback | null;
 
@@ -21,87 +21,31 @@ const InterviewCard = ({ interviewId, userId, role, type, techstack, createdAt }
 
     //gi stands for g- global , i-case insensitive
     //regex expression
-    const normalizedType = /mix/gi.test(type) ? 'Mixed' : type;
     const formatedDate = dayjs(feedback?.createdAt || createdAt || Date.now()).format('D MMM, YYYY')
 
 
+    // 3 vertical scrollable sections, each a page card with random feature names and bg colors
+    const features = [
+      { name: 'AI Analysis', bg: 'bg-blue-200' },
+      { name: 'Instant Feedback', bg: 'bg-green-200' },
+      { name: 'Expert Review', bg: 'bg-yellow-200' },
+    ];
     return (
-        <div className='card-border w-[360px] max-sm:w-full min-h-96'>
-            <div className='card-interview'>
-                <div>
-
-                    {/* Type of job rendered at the top right of the card */}
-
-                    <div className='absolute top-0 right-0 w-fit px-4 py-2 rounded-bl-lg bg-light-600'>
-                        <p className='badge-text'>{normalizedType}</p>
-                    </div>
-
-                    {/* getRandomInterviewCover is a function in utils to choose random covers from a function in constants having the cover images */}
-                    {/* Don't forget to uncomment out the Interview covers and MAPPINGS in constants */}
-                    <Image src={getRandomInterviewCover()} alt="cover photo" width={90} height={90} className='rounded-full object-fit size-[90px]' />
-
-
-                    {/* Name of the role */}
-
-                    <h3 className='mt-5 capitalize'>
-                        {role} Interview
-                    </h3>
-
-
-
-                    {/* Date and Ratings */}
-
-                    <div className='flex flex-row gap-5 mt-3'>
-
-                        {/* Date  */}
-                        <div className='flex flex-row gap-2'>
-                            
-                            {/* Date logo*/}
-                            <Image src = "/calendar.svg" alt = "calendar" width = {22} height = {22}/>
-
-                            {/* Date */}
-                            <p>{formatedDate}</p>
-                        </div>
-
-
-                        {/* Ratings */}
-                        <div className='flex flex-row gap-2'>
-                            {/* Ratings logo*/}
-                            <Image src = "/star.svg" alt = "star" width = {22} height={22}/>
-
-                            <p>{feedback?.totalScore || '---'}/100</p>
-                        </div>
-                    </div>
-
-                    {/* Final Assessment Text */}
-
-                    {/* line clamp here fits the text in 2 lines */}
-                    <p className='line-clamp-2 mt-5'>{feedback?.finalAssessment || "You haven't taken this interview yet. Take it now to improve your skills."}</p>
-                </div>
-
-
-
-                {/* Tech stack and button*/}
-                <div className='flex flex-row justify-between'>
-
-                    {/*logos of tech stack */}
-                    {/* <p>Tech icons</p> */}
-                    <DisplayTechIcons techStack={techstack} />
-
-                    {/* Button */}
-                    <Button className= "btn-primary">
-
-                        {/* If they have taken the interview then show them the feedback page otherwise take interview for the first time */}
-                        <Link href = {feedback ? `/interview/${interviewId}/feedback` : `/interview/${interviewId}`}></Link>
-                        View Interview
-                    </Button>
-
-                </div>
-            </div>
-        </div>
+      <div className="w-[360px] max-sm:w-full h-96 rounded-xl shadow-lg overflow-hidden flex flex-col snap-y snap-mandatory overflow-y-auto">
+        {features.map((feature, idx) => (
+          <div
+            key={feature.name}
+            className={`flex-1 min-h-0 flex flex-col items-center justify-center ${feature.bg} snap-center`}
+            style={{ minHeight: '33.33%' }}
+          >
+            <h3 className="text-xl font-bold mb-2">{feature.name}</h3>
+            <p className="text-gray-700 text-sm">Section {idx + 1} content for {feature.name}.</p>
+          </div>
+        ))}
+      </div>
     )
 }
 
 
 
-export default InterviewCard
+export default PatientCard

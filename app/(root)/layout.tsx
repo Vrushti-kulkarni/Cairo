@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { isAuthenticated } from '@/lib/actions/auth.action';
 import { redirect } from 'next/navigation';
+import { div } from 'framer-motion/client';
 
 const RootLayout = async ({ children }:{ children: ReactNode }) => {
 
@@ -13,22 +14,11 @@ const RootLayout = async ({ children }:{ children: ReactNode }) => {
 
     // children passed as props of type reactnode
     return(
-        
-
         //for logo
-        <div className='root-layout'>
-            <nav>
-
-                {/* for the logo and name, pressing logo should reload page */}
-                <Link href="/" className='flex items-center gap-2'>
-                    <Image src="/logo.svg" alt="logo" width={38} height = {32}/>
-                    <h2 className='text-primamry-100'>InterviewPrep</h2>
-                </Link>
-                
-            </nav>
-
+        <div className='min-h-screen overflow-hidden bg-grid-pattern'>
             {children}
-        </div> // return children pages if any
+        </div>
+         // return children pages if any
     )
 }
 

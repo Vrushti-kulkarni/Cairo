@@ -14,9 +14,9 @@ import { useState } from 'react';
 
 const Agent = ({ userName }: AgentProps) => {
     const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
-    const [isSpeaking, setIsSpeaking] = useState<'vapi' | 'user' | null>(null);
+    const [isSpeaking, setIsSpeaking] = useState<'Cairo' | 'user' | null>(null);
     const [vapi, setVapi] = useState<any>(null);
-    const [messages, setMessages] = useState<{ sender: 'vapi' | 'user', text: string }[]>([]);
+    const [messages, setMessages] = useState<{ sender: 'Cairo' | 'user', text: string }[]>([]);
     const [currentRoll, setcurrentRoll] = useState<string>()
     const [liveTranscript, setliveTranscript] = useState<string>()
 
@@ -41,8 +41,8 @@ const Agent = ({ userName }: AgentProps) => {
                     console.log(`${role}: ${transcript}`);
                     // Normalize role to 'vapi' or 'user'
                     let normalizedRole = 'user';
-                    if (role === 'agent' || role === 'assistant' || role === 'vapi') {
-                        normalizedRole = 'vapi';
+                    if (role === 'agent' || role === 'assistant' || role === 'Cairo') {
+                        normalizedRole = 'Cairo';
                     }
                     if (transcriptType === 'partial') {
                         setliveTranscript(transcript);
@@ -57,7 +57,7 @@ const Agent = ({ userName }: AgentProps) => {
 
             vapiInstance.on('speech-start', () => {
                 console.log('Assistant started speaking');
-                setcurrentRoll('vapi');
+                setcurrentRoll('Cairo');
 
             });
 
@@ -93,10 +93,10 @@ const Agent = ({ userName }: AgentProps) => {
                 <div className='card-interviewer'>
                     {/* the avatar image */}
                     <div className='avatar'>
-                        <Image src="/ai-avatar.png" alt="vapi" width={65} height={54} className='object-cover' />
+                        <Image src="/cairo.png" alt="Cairo" width={120} height={140} className='object-cover rounded-full' />
                         {isSpeaking && <span className='animate-speak' />}
                     </div>
-                    <h3>Vapi</h3>
+                    <h3>Cairo</h3>
                 </div>
 
 
@@ -105,7 +105,7 @@ const Agent = ({ userName }: AgentProps) => {
                     {/* the avatar image */}
                     <div className='card-content'>
                         <Image src="/user_avatar.png" alt="user avatar" width={65} height={54} className='rounded-full object-cover size-[120px]' />
-
+                        {!isSpeaking && <span className='animate-speak' />}
                         <h3>{userName}</h3>
                     </div>
                 </div>
@@ -118,10 +118,10 @@ const Agent = ({ userName }: AgentProps) => {
                             <p className={cn(
                                 'transition-opacity duration-500 opacity-0',
                                 'animate-fadeIn opacity-100',
-                                currentRoll === 'vapi' ? 'text-blue-600' : 'text-green-700',
+                                currentRoll === 'Cairo' ? 'text-blue-600' : 'text-green-700',
                                 'font-bold'
                             )}>
-                                <span className="mr-2 font-semibold">{currentRoll === 'vapi' ? 'Vapi:' : 'You:'}</span>
+                                <span className="mr-2 font-semibold">{currentRoll === 'Cairo' ? 'Cairo:' : 'You:'}</span>
                                 {liveTranscript}
                             </p>
                         </div>
