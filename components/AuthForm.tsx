@@ -124,10 +124,10 @@ const AuthForm = ({ type }: { type: FormType }) => {
             <div className="flex flex-col gap-6 card py-14 px-10">
                 <div className="w-8 h-8 bg-black rounded flex items-center justify-center">
                     <h2 className="text-primary text-white font-bold text-sm">H</h2>
-                </div>
+                
                 {/* <span className="font-semibold text-lg">HealthWise</span> */}
                 <h2 className='text-primary-100'>HealthWise</h2>
-
+                </div>
                 <h3 className="flex justify-center">Your AI health care assistant</h3>
 
                 <Form {...form}>
