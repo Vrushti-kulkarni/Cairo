@@ -28,5 +28,5 @@ Cairo is an intelligent voice-based medical assistant designed to support users 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/cairo-ai-medical-assistant.git
-cd cairo-ai-medical-assistant
+git clone https://github.com/Vrushti-kulkarni/Cairo.git
+cd Cairo
