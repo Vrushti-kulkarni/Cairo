@@ -28,17 +28,17 @@ import Vapi from '@vapi-ai/web';
 //    username: z.string().min(2).max(50),
 //})
 
-const authFormSchema = (type :FormType) => {
+const authFormSchema = (type: FormType) => {
     return z.object({
-        name : type === "sign-up" ? z.string().min(3) : z.string().optional(),
-        email : z.string().email(),
-        password : z.string().min(3)
+        name: type === "sign-up" ? z.string().min(3) : z.string().optional(),
+        email: z.string().email(),
+        password: z.string().min(3)
     })
 
 }
 
 //here type form type is written because in sign in and sign up we have mentioned "type" hence for conditional rendering we pass props
-const AuthForm = ({ type } : { type : FormType }) => {
+const AuthForm = ({ type }: { type: FormType }) => {
 
     //for routing in try catch block
     const router = useRouter();
@@ -52,7 +52,7 @@ const AuthForm = ({ type } : { type : FormType }) => {
         defaultValues: {
             name: "",
             email: "",
-            password:""
+            password: ""
         },
     })
 
@@ -60,21 +60,21 @@ const AuthForm = ({ type } : { type : FormType }) => {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
-        try{
-            if(type ==='sign-up'){
-                
+        try {
+            if (type === 'sign-up') {
+
 
                 //adding the firebase extra code here
                 const { name, email, password } = values;
                 const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
                 const result = await signUp({
                     uid: userCredentials.user.uid,
-                    name: name!, 
-                    email, 
+                    name: name!,
+                    email,
                     password
                 })
 
-                if(!result?.success){
+                if (!result?.success) {
                     toast.error(result?.message);
                     return;
                 }
@@ -82,14 +82,14 @@ const AuthForm = ({ type } : { type : FormType }) => {
                 toast.success("Account created successfully. Please sign in.");
                 router.push('/sign-in');
             }
-            else{
+            else {
 
                 //added firebase code
 
                 const { email, password } = values;
                 const userCredentials = await signInWithEmailAndPassword(auth, email, password);
                 const idToken = await userCredentials.user.getIdToken();
-                if(!idToken){
+                if (!idToken) {
                     toast.error('Sign in failed')
                     return;
                 }
@@ -103,7 +103,7 @@ const AuthForm = ({ type } : { type : FormType }) => {
             }
 
         }
-        catch(error: any){
+        catch (error: any) {
             console.log(error)
             // Firebase error messages are in error.code
             let message = "There was an error. Please try again.";
@@ -122,12 +122,13 @@ const AuthForm = ({ type } : { type : FormType }) => {
     return (
         <div className="card-border lg:min-w-[566px]">
             <div className="flex flex-col gap-6 card py-14 px-10">
-                <div className="flex flex-row gap-2 justify-center">
-                    <Image src="/logo.svg" alt="logo" height={32} width={38} />
-                    <h2 className="text-primary-100">InterviewPrep</h2>
+                <div className="w-8 h-8 bg-black rounded flex items-center justify-center">
+                    <h2 className="text-primary text-white font-bold text-sm">H</h2>
                 </div>
+                {/* <span className="font-semibold text-lg">HealthWise</span> */}
+                <h2 className='text-primary-100'>HealthWise</h2>
 
-                <h3 className="flex justify-center">Practice job interview with AI</h3>
+                <h3 className="flex justify-center">Your AI health care assistant</h3>
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 mt-4 form ">
@@ -136,47 +137,47 @@ const AuthForm = ({ type } : { type : FormType }) => {
 
                         {/* for name */}
                         {!isSignIn && (
-                            <FormField 
-                            control={form.control} 
-                            name="name" 
-                            label = "Name" 
-                            placeholder="Your name"/>
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                label="Name"
+                                placeholder="Your name" />
                         )}
 
                         {/* for email */}
-                        
-                            <FormField 
-                            control={form.control} 
-                            name="email" 
-                            label = "Email" 
+
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            label="Email"
                             placeholder="Enter your email-d"
-                            type = "email"
-                            />
-                            
-                        
+                            type="email"
+                        />
+
+
 
                         {/* for password */}
-                    
-                            <FormField 
-                            control={form.control} 
-                            name="password" 
-                            label = "Password" 
+
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            label="Password"
                             placeholder="Enter your password"
-                            type = "password"
-                            />
-            
+                            type="password"
+                        />
+
 
                         <Button className="btn" type="submit">{isSignIn ? 'Sign In' : 'Create an Account'}</Button>
                     </form>
                 </Form>
                 <p className="text-center">
-                            {isSignIn ? 'No account yet?' : 'Have an account already?'}
-                            <Link href={!isSignIn ?  '/sign-in': '/sign-up'} 
-                                className="font-bold text-user-primary ml-1">
-                                {!isSignIn ?  'Sign in': 'Sign up'} 
-                            </Link>
-                            
-                </p>  
+                    {isSignIn ? 'No account yet?' : 'Have an account already?'}
+                    <Link href={!isSignIn ? '/sign-in' : '/sign-up'}
+                        className="font-bold text-user-primary ml-1">
+                        {!isSignIn ? 'Sign in' : 'Sign up'}
+                    </Link>
+
+                </p>
             </div>
         </div>
     );
