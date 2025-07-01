@@ -30,4 +30,3 @@ Cairo is an intelligent voice-based medical assistant designed to support users 
 ```bash
 git clone https://github.com/Vrushti-kulkarni/Cairo.git
 cd Cairo
->>>>>>> 093ca4fa13916c76ac6e6484549881ca68aea7ee
