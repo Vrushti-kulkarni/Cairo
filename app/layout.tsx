@@ -8,7 +8,7 @@ const monaSans = Mona_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Interviewer",
+  title: "Cairo",
   description: "Generated using AI-powered technology",
 };
 

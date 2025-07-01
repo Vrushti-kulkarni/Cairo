@@ -128,8 +128,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 {/* <span className="font-semibold text-lg">HealthWise</span> */}
                 <h2 className='text-primary-100'>HealthWise</h2>
 
-                <h3 className="flex justify-center">Your AI health care assistant</h3>
-
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 mt-4 form ">
 
