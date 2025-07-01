@@ -1,25 +1,89 @@
+'use client'
 import React from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import Vapi from '@vapi-ai/web';
 
-enum CallStatus{
+
+enum CallStatus {
     INACTIVE = 'INACTIVE',
-    CONNECTING = 'CONNECTING',
     ACTIVE = 'ACTIVE',
-    FINISHED = 'FINISHED'
 }
 
-const Agent = ({ userName }: AgentProps) => {
-    //to figure out who is speaking
-    const callStatus = CallStatus.FINISHED
-    const isSpeaking = true;
+import { useState } from 'react';
 
-    //transcript from vapi 
-    const messages = [
-        'What is your name?',
-        'My name is vrushti, nice to meet you!'
-    ]
-    const lastMessage = messages[messages.length-1]
+const Agent = ({ userName }: AgentProps) => {
+    const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
+    const [isSpeaking, setIsSpeaking] = useState<'vapi' | 'user' | null>(null);
+    const [vapi, setVapi] = useState<any>(null);
+    const [messages, setMessages] = useState<{ sender: 'vapi' | 'user', text: string }[]>([]);
+    const [currentRoll, setcurrentRoll] = useState<string>()
+    const [liveTranscript, setliveTranscript] = useState<string>()
+
+    const handleCall = () => {
+        if (!vapi) {
+            const VapiClass = require('@vapi-ai/web').default;
+            const vapiInstance = new VapiClass(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
+
+            // Listen for events
+            vapiInstance.on('call-start', () => {
+                console.log('Call started');
+                setCallStatus(CallStatus.ACTIVE);
+            });
+            vapiInstance.on('call-end', () => {
+                console.log('Call ended');
+                setCallStatus(CallStatus.INACTIVE);
+                setIsSpeaking(null);
+            });
+            vapiInstance.on('message', (message: any) => {
+                if (message.type === 'transcript') {
+                    const {role, transcriptType, transcript} = message;
+                    console.log(`${role}: ${transcript}`);
+                    // Normalize role to 'vapi' or 'user'
+                    let normalizedRole = 'user';
+                    if (role === 'agent' || role === 'assistant' || role === 'vapi') {
+                        normalizedRole = 'vapi';
+                    }
+                    if (transcriptType === 'partial') {
+                        setliveTranscript(transcript);
+                        setcurrentRoll(normalizedRole);
+                    } else {
+                        // Final transcript
+                        setliveTranscript(transcript);
+                        setcurrentRoll(normalizedRole);
+                    }
+                }
+            });
+
+            vapiInstance.on('speech-start', () => {
+                console.log('Assistant started speaking');
+                setcurrentRoll('vapi');
+
+            });
+
+
+            vapiInstance.on('speech-end', () => {
+                console.log('Assistant stopped speaking');
+                setcurrentRoll('user');
+            });
+
+            setVapi(vapiInstance);
+            vapiInstance.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID!);
+        } else {
+            vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID!);
+        }
+        // setCallStatus(CallStatus.ACTIVE); // Now handled by event
+    };
+
+    const handleEnd = () => {
+        if (vapi) {
+            vapi.stop && vapi.stop();
+        }
+        setCallStatus(CallStatus.INACTIVE);
+        setIsSpeaking(null);
+        setliveTranscript(undefined);
+        setcurrentRoll(undefined);
+    };
 
     return (
         <>
@@ -48,11 +112,17 @@ const Agent = ({ userName }: AgentProps) => {
             </div>
 
                 {/* for the transcript from vapi */}
-                {messages.length > 0 && (
+                {(callStatus === CallStatus.ACTIVE && currentRoll && liveTranscript) && (
                     <div className='transcript-border'>
-                        <div className='transcript'>
-                            <p key = {lastMessage} className={cn('transition-opacity duration-500 opacity-0', 'animate-fadeIn opacity-100')}>
-                                {lastMessage}
+                        <div className='transcript flex flex-col gap-2'>
+                            <p className={cn(
+                                'transition-opacity duration-500 opacity-0',
+                                'animate-fadeIn opacity-100',
+                                currentRoll === 'vapi' ? 'text-blue-600' : 'text-green-700',
+                                'font-bold'
+                            )}>
+                                <span className="mr-2 font-semibold">{currentRoll === 'vapi' ? 'Vapi:' : 'You:'}</span>
+                                {liveTranscript}
                             </p>
                         </div>
                     </div>
@@ -60,22 +130,12 @@ const Agent = ({ userName }: AgentProps) => {
 
                 {/* for the bottom call status */}
                 <div className='w-full flex justify-center'>
-
-                    {/* if call status is active, it will show call button else end button */}
-                    {callStatus != 'ACTIVE' ? (
-                        <button className='relative btn-call'>
-                            <span className={cn('absolute animate-ping rounded-full opacity-75', callStatus!='CONNECTING' & 'hidden')}/>
-                            
-                            <span>
-                                {callStatus === 'INACTIVE' || callStatus === 'FINISHED' ? 'Call' : ' . . . '} 
-                            </span>
-
-
-
-
+                    {callStatus !== CallStatus.ACTIVE ? (
+                        <button className='relative btn-call bg-green-500 text-white' onClick={handleCall}>
+                            <span>Call</span>
                         </button>
                     ) : (
-                        <button className='btn-disconnect'>
+                        <button className='btn-disconnect bg-red-500 text-white' onClick={handleEnd}>
                             End
                         </button>
                     )}

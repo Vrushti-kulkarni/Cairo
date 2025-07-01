@@ -21,6 +21,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "fire
 import { auth } from "@/firebase/client"
 import { signIn, signUp } from "@/lib/actions/auth.action"
 
+import Vapi from '@vapi-ai/web';
+
 //delete this
 //const formSchema = z.object({
 //    username: z.string().min(2).max(50),
@@ -101,16 +103,21 @@ const AuthForm = ({ type } : { type : FormType }) => {
             }
 
         }
-        catch(error){
+        catch(error: any){
             console.log(error)
-            toast.error(`There was an error: ${error}`)
-
+            // Firebase error messages are in error.code
+            let message = "There was an error. Please try again.";
+            if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+                message = "Invalid email or password.";
+            } else if (error.message) {
+                message = error.message;
+            }
+            toast.error(message)
         }
     }
 
     //boolean value assigned to isSignIn for conditional rendering
     const isSignIn = type === 'sign-in';
-
 
     return (
         <div className="card-border lg:min-w-[566px]">
@@ -175,4 +182,4 @@ const AuthForm = ({ type } : { type : FormType }) => {
     );
 };
 
-export default AuthForm 
+export default AuthForm
